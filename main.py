@@ -2,10 +2,14 @@ from src.read_dataset import read_dataset
 from src.prepare_dataset import prepare_dataset
 from src.define_model import conv4
 
+import tensorflow as tf
+
 def main():
 
 # ─── Configurations
 #
+    print("List of available GPUs: ", tf.config.list_physical_devices('GPU'))
+
     # name = "combined"
     name = "pacs"
     # name = "yildirim"

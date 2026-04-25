@@ -5,9 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "keras>=3.14.0",
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "scikit-image>=0.26.0",
     "scikit-learn>=1.8.0",
+    "tensorflow[and-cuda]>=2.21.0",
 ]

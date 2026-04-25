@@ -71,7 +71,7 @@ def save_groups(train_groups, test_groups, base_name):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    output_filename = get_next_filename(output_folder=output_folder, base_name=base_name, type=type)
+    output_filename = get_next_filename(output_folder=output_folder, base_name=base_name, type='txt')
     output_path = os.path.join(output_folder, output_filename)
 
     with open(output_path, 'w') as file:
