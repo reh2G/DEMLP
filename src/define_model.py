@@ -34,6 +34,4 @@ def conv4():
     model = Model(inputs=inputs, outputs=outputs)
     model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.summary()
-
     return model
