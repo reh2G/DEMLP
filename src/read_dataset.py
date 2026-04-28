@@ -6,32 +6,20 @@ import glob
 import cv2
 import numpy as np
 
-# ─── Configurations
-#
-DEBUG = False
-#DEBUG = True
-
-SIMILARITY = 0.75
-
 # ─── Defines the dataset splitter
 #
-def read_dataset(path, name):
-    print(f'Lendo dataset de: {path}\n')
-
+def read_dataset(path, name, DEBUG, SIMILARITY):
     img_types = ['*.jpg', '*.png']
     classes = {'healthy': 0, 'stone': 1}
 
-    all_images = []
-    all_labels = []
-    all_paths  = []
-    all_groups = []
+    all_images, all_labels, all_paths, all_groups = [], [], [], []
     group_offset = 0  # unique IDs for different classes
 
     for class_name, label in classes.items():
         class_path = os.path.join(path, class_name)
         images, labels, paths = [], [], []
 
-        print(f'Lendo imagens {class_name} de: {class_path}')
+        print(f'\nLendo imagens {class_name} de: {class_path}')
 
         for pattern in img_types:
             img_paths = glob.glob(os.path.join(class_path, pattern))
@@ -50,12 +38,7 @@ def read_dataset(path, name):
 
         print(f'Total {class_name}: {len(images)} imagens')
 
-        group_ids = find_groups(
-            images=images,
-            image_paths=paths,
-            similarity_threshold=SIMILARITY,
-            DEBUG=DEBUG
-        )
+        group_ids = find_groups(images=images, image_paths=paths, similarity_threshold=SIMILARITY, DEBUG=DEBUG)
 
         group_ids += group_offset
         group_offset = group_ids.max() + 1
@@ -72,12 +55,12 @@ def read_dataset(path, name):
     paths = np.array(all_paths)
     groups = np.array(all_groups)
 
-    save_groups(
-        image_paths=paths,
-        group_ids=groups,
-        base_name='groups_' + name
-    )
+    save_groups(image_paths=paths, group_ids=groups, base_name='groups_' + name)
 
-    print(f'\nTotal: {len(X)} imagens | {len(np.unique(groups))} grupos únicos\n')
+    print(f'\nTotal: {len(X)} imagens | {len(np.unique(groups))} grupos únicos')
+
+    if DEBUG:
+        with np.printoptions(threshold=np.inf):
+            print(groups)
 
     return X, y, groups

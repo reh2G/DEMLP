@@ -43,15 +43,11 @@ def find_groups(images, image_paths, similarity_threshold, DEBUG=False):
 
 # ─── Function to save the groups in a text file
 #
-def save_groups(image_paths, group_ids, base_name, file_type='txt'):
+def save_groups(image_paths, group_ids, base_name):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    output_filename = get_next_filename(
-        output_folder=output_folder,
-        base_name=base_name,
-        type=file_type
-    )
+    output_filename = get_next_filename(output_folder=output_folder, base_name=base_name, type='txt')
     output_path = os.path.join(output_folder, output_filename)
 
     from collections import defaultdict
@@ -65,4 +61,4 @@ def save_groups(image_paths, group_ids, base_name, file_type='txt'):
             for p in paths:
                 f.write(f'  {p}\n')
 
-    print(f'Grupos salvos em {output_path}')
+    print(f'\nGrupos salvos em {output_path}')
