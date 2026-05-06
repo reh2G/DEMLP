@@ -23,7 +23,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name="last_conv"):
 
     # Normalize the heatmap between 0 & 1
     heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
-    # Se todos os valores forem zero, lidar com division by zero
+    # If all values are zero, deal with division by zero
     if tf.math.is_nan(heatmap[0, 0]):
         heatmap = tf.zeros_like(heatmap)
     

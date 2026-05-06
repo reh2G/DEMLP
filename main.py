@@ -19,9 +19,6 @@ def main():
     name = "combined"
     imgs_path = 'data/' + name
 
-    # ─── Leitura do dataset
-    # Se o dataset real não estiver na pasta 'data/combined' no momento do teste,
-    # certifique-se de que ele esteja lá, ou crie diretórios fictícios para teste se necessário.
     X, y, groups = read_dataset(path=imgs_path, name=name, DEBUG=DEBUG, SIMILARITY=SIMILARITY)
 
     # ─── Separation of holdout test (group-aware)
@@ -63,7 +60,7 @@ def main():
             print(f"\n-- Fold {fold+1} --")
             print(f"Original: {len(X_train)} treino | {len(X_val)} validação")
 
-            # Aplica a estratégia de dados
+            # Aply the data strategy only for the train data
             if strategy == 'augmentation':
                 X_train, y_train = apply_augmentation(X_train, y_train, minority_class=1, majority_class=0)
             elif strategy == 'small-data':
@@ -71,14 +68,14 @@ def main():
                 
             print(f"Após estratégia '{strategy}': {len(X_train)} treino")
             
-            # Prepara dados (normalização + one-hot)
+            # Prepare the train and validation data
             X_train_prep, y_train_prep, X_val_prep, y_val_prep = prepare_dataset(X_train, y_train, X_val, y_val)
             
-            # Instancia o modelo
+            # Instantiate the model
             tf.keras.backend.clear_session()
             model = conv4()
             
-            # Treina o modelo (Usando apenas 5 épocas como padrão para não demorar muito, altere conforme necessário)
+            # Train the model
             history = model.fit(
                 X_train_prep, y_train_prep,
                 validation_data=(X_val_prep, y_val_prep),
@@ -87,7 +84,7 @@ def main():
                 verbose=1
             )
             
-            # Avalia o modelo
+            # Evaluate the model
             y_pred_prob = model.predict(X_val_prep)
             y_pred = np.argmax(y_pred_prob, axis=1)
             y_true = np.argmax(y_val_prep, axis=1)
@@ -99,7 +96,7 @@ def main():
             
             print(f"Métricas Fold {fold+1} - Acc: {acc:.4f}, Precision: {prec:.4f}, Recall: {rec:.4f}, F1: {f1:.4f}")
             
-            # Salvar métricas
+            # Save metrics
             with open(f"{fold_dir}/metrics.txt", "w") as f:
                 f.write(f"Accuracy: {acc:.4f}\n")
                 f.write(f"Precision: {prec:.4f}\n")
@@ -107,15 +104,15 @@ def main():
                 f.write(f"F1 Score: {f1:.4f}\n")
                 f.write(f"Confusion Matrix:\n{confusion_matrix(y_true, y_pred)}\n")
             
-            # Salvar os grupos que caíram neste fold para documentação
+            # Save the groups that fall into this fold for documentation
             with open(f"{fold_dir}/groups.txt", "w") as f:
                 f.write(f"Train Groups: {fold_train_groups}\n")
                 f.write(f"Validation Groups: {fold_val_groups}\n")
             
-            # Salvar o modelo
+            # Save the model
             model.save(f"{fold_dir}/model.keras")
             
-            # Grad-CAM para 3 imagens aleatórias de validação
+            # Grad-CAM for 3 random validation images
             num_cams = min(3, len(X_val_prep))
             cam_indices = np.random.choice(len(X_val_prep), num_cams, replace=False)
             

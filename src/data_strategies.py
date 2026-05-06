@@ -2,16 +2,11 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator   
 
 def add_noise(img):
-    """Adiciona ruído aleatório de até 2% aos pixels da imagem."""
-    # Assumindo imagens em escala 0-255 antes do /255 em prepare_dataset
     noise = np.random.uniform(-0.02 * 255, 0.02 * 255, img.shape)
     img_noisy = img + noise
     return np.clip(img_noisy, 0, 255)
 
 def apply_augmentation(X_train, y_train, minority_class=1, majority_class=0):
-    """
-    Aplica data augmentation na classe minoritária até igualar a quantidade da majoritária.
-    """
     X_minority = X_train[y_train == minority_class]
     X_majority = X_train[y_train == majority_class]
     
@@ -59,16 +54,13 @@ def apply_augmentation(X_train, y_train, minority_class=1, majority_class=0):
     X_train_balanced = np.concatenate([X_train, augmented_X], axis=0)
     y_train_balanced = np.concatenate([y_train, augmented_y], axis=0)
     
-    # Shuffle para misturar
+    # Shuffle
     indices = np.arange(len(X_train_balanced))
     np.random.shuffle(indices)
     
     return X_train_balanced[indices], y_train_balanced[indices]
 
 def apply_undersampling(X_train, y_train, minority_class=1, majority_class=0):
-    """
-    Realiza undersampling da classe majoritária até igualar a minoritária.
-    """
     X_minority = X_train[y_train == minority_class]
     y_minority = y_train[y_train == minority_class]
     
