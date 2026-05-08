@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 from src.dataset.read_dataset import read_dataset
 from src.model.run_model import run_model
 from src.dataset.utils_dataset import get_next_test_dir
@@ -10,9 +11,9 @@ def main():
     DEBUG = False
     SIMILARITY = 0.75
     KFOLD = 5
-    EPOCHS = 200
+    EPOCHS = 5
     BATCH_SIZE = 32
-    EARLY_STOPPING_PATIENCE = EPOCHS/10
+    EARLY_STOPPING_PATIENCE = 20
     name = "combined"
     imgs_path = 'data/' + name
 

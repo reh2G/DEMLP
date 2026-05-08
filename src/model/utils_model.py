@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
-from src.model.grad_cam import make_gradcam_heatmap, save_and_display_gradcam
+from src.visual.grad_cam import make_gradcam_heatmap, save_and_display_gradcam
 
 CLASS_NAMES = {0: 'Healthy', 1: 'Stone'}
 

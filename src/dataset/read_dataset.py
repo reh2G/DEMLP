@@ -1,10 +1,10 @@
-from src.dataset.utils_dataset import sort_files_numerically
-from src.dataset.groups_dataset import find_groups, save_groups
-
 import os
 import glob
 import cv2
 import numpy as np
+
+from src.dataset.utils_dataset import sort_files_numerically
+from src.dataset.groups_dataset import find_groups, save_groups
 
 # ─── Defines the dataset splitter
 #

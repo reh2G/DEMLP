@@ -5,9 +5,11 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from src.dataset.prepare_dataset import prepare_dataset
-from src.model.define_model import conv4
 from src.dataset.strategies_dataset import apply_augmentation, apply_undersampling
+from src.model.define_model import conv4
 from src.model.utils_model import save_config, save_fold_groups, save_metrics, generate_gradcam, save_augmented_samples, save_excluded_images
+from src.visual.plot_metrics import (plot_average_learning_curves, plot_cumulative_confusion_matrix, plot_classification_report_heatmap, plot_roc_curve_cv, plot_pr_curve_cv, plot_metrics_boxplot)
+from src.visual.plot_errors import plot_worst_errors_gradcam
 
 # ─── Run the complete experiment pipeline with all strategies and folds
 #
@@ -44,6 +46,14 @@ def run_model(X, y, groups, config, output_dir):
         
         # Reset KFold for each strategy to ensure same splits
         kf = KFold(n_splits=n_folds, shuffle=True, random_state=53)
+        
+        # Arrays to collect metrics across all folds
+        histories = []
+        all_y_true = []
+        all_y_pred = []
+        all_y_prob = []
+        fold_metrics = []
+        all_X_val = []
         
         for fold, (train_g_idx, val_g_idx) in enumerate(kf.split(unique_trainval_groups)):
             fold_dir = os.path.join(strategy_dir, f"fold_{fold+1}")
@@ -102,6 +112,14 @@ def run_model(X, y, groups, config, output_dir):
             # Save metrics
             save_metrics(fold_dir, fold, acc, prec, rec, f1, y_true, y_pred)
             
+            # Append fold results for strategy visualization
+            histories.append(history.history)
+            all_y_true.append(y_true)
+            all_y_pred.append(y_pred)
+            all_y_prob.append(y_pred_prob[:, 1])
+            fold_metrics.append({'acc': acc, 'prec': prec, 'rec': rec, 'f1': f1})
+            all_X_val.append(X_val_prep)
+            
             # Save the groups for this fold (complete, no truncation)
             save_fold_groups(fold_dir, fold_train_groups, fold_val_groups, test_groups)
             
@@ -111,4 +129,17 @@ def run_model(X, y, groups, config, output_dir):
             # Grad-CAM: 3 healthy + 3 stone from validation
             generate_gradcam(model, X_val_prep, y_val_prep, fold_dir)
                 
-        print(f"\nFinalizada a estratégia {strategy}")
+        print(f"\nFinalizada a validação cruzada da estratégia {strategy}.")
+        print("Gerando visualizações globais...")
+        
+        plot_average_learning_curves(histories, strategy_dir)
+        plot_cumulative_confusion_matrix(all_y_true, all_y_pred, strategy_dir)
+        plot_classification_report_heatmap(all_y_true, all_y_pred, strategy_dir)
+        plot_roc_curve_cv(all_y_true, all_y_prob, strategy_dir)
+        plot_pr_curve_cv(all_y_true, all_y_prob, strategy_dir)
+        plot_metrics_boxplot(fold_metrics, strategy_dir)
+        
+        print("Gerando Grad-CAM para os piores erros...")
+        plot_worst_errors_gradcam(all_X_val, all_y_true, all_y_pred, all_y_prob, strategy_dir)
+        
+        print(f"[{strategy.upper()}] Visualizações salvas com sucesso.")
