@@ -4,7 +4,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc, precision_recall_curve
 
 CLASS_NAMES = ['Healthy', 'Stone']
@@ -86,31 +85,55 @@ def plot_cumulative_confusion_matrix(all_y_true, all_y_pred, output_dir):
     plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'), dpi=150, bbox_inches='tight')
     plt.close(fig)
 
-# ─── Plot classification report heatmap
+# ─── Plot classification report as a grouped horizontal bar chart
 #
-def plot_classification_report_heatmap(all_y_true, all_y_pred, output_dir):
-    """
-    Plots the classification report as a heatmap based on the cumulative predictions.
-    """
+def plot_classification_report_bars(all_y_true, all_y_pred, output_dir):
+    import pandas as pd
+
     y_true_flat = np.concatenate(all_y_true)
     y_pred_flat = np.concatenate(all_y_pred)
-    
+
     report = classification_report(y_true_flat, y_pred_flat, target_names=CLASS_NAMES, output_dict=True)
-    
-    # Extract data for heatmap
-    data = []
-    labels = []
-    for label in CLASS_NAMES + ['macro avg', 'weighted avg']:
+
+    # Extract per-class and averages (excluding 'accuracy' row)
+    rows = []
+    row_labels = CLASS_NAMES + ['macro avg', 'weighted avg']
+    for label in row_labels:
         if label in report:
-            data.append([report[label]['precision'], report[label]['recall'], report[label]['f1-score']])
-            labels.append(label)
-    
-    data = np.array(data)
-    
-    fig, ax = plt.subplots(figsize=(7, 5))
-    sns.heatmap(data, annot=True, fmt='.4f', cmap='viridis', xticklabels=['Precision', 'Recall', 'F1-Score'], yticklabels=labels, vmin=0.0, vmax=1.0, ax=ax)
+            rows.append({
+                'Metrics': label,
+                'Precision': report[label]['precision'],
+                'Recall':    report[label]['recall'],
+                'F1-Score':  report[label]['f1-score'],
+            })
+
+    df = pd.DataFrame(rows)
+    df_melted = df.melt(id_vars=['Metrics'], value_vars=['Precision', 'Recall', 'F1-Score'],
+                        var_name='Metric', value_name='Score')
+
+    # Overall accuracy scalar
+    accuracy = report.get('accuracy', None)
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    sns.barplot(data=df_melted, y='Metrics', x='Score', hue='Metric', palette='muted', ax=ax)
+
+    # Annotate bar values
+    for container in ax.containers:
+        ax.bar_label(container, fmt='%.3f', padding=3, fontsize=9)
+
+    ax.set_xlim(0, 1.15)
+    ax.set_xlabel('Score')
+    ax.set_ylabel('')
     ax.set_title('Classification Report')
-    
+
+    # Draw accuracy as a vertical dashed line
+    if accuracy is not None:
+        ax.axvline(x=accuracy, color='crimson', linestyle='--', linewidth=1.5,
+                   label=f'Accuracy = {accuracy:.4f}')
+
+    ax.legend(loc='lower right', bbox_to_anchor=(1.0, 0.0))
+    ax.grid(axis='x', linestyle='--', alpha=0.5)
+
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'classification_report.png'), dpi=150, bbox_inches='tight')
     plt.close(fig)

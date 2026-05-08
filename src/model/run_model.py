@@ -8,7 +8,7 @@ from src.dataset.prepare_dataset import prepare_dataset
 from src.dataset.strategies_dataset import apply_augmentation, apply_undersampling
 from src.model.define_model import conv4
 from src.model.utils_model import save_config, save_fold_groups, save_metrics, generate_gradcam, save_augmented_samples, save_excluded_images
-from src.visual.plot_metrics import (plot_average_learning_curves, plot_cumulative_confusion_matrix, plot_classification_report_heatmap, plot_roc_curve_cv, plot_pr_curve_cv, plot_metrics_boxplot)
+from src.visual.plot_metrics import (plot_average_learning_curves, plot_cumulative_confusion_matrix, plot_classification_report_bars, plot_roc_curve_cv, plot_pr_curve_cv, plot_metrics_boxplot)
 from src.visual.plot_errors import plot_worst_errors_gradcam
 
 # ─── Run the complete experiment pipeline with all strategies and folds
@@ -134,7 +134,7 @@ def run_model(X, y, groups, config, output_dir):
         
         plot_average_learning_curves(histories, strategy_dir)
         plot_cumulative_confusion_matrix(all_y_true, all_y_pred, strategy_dir)
-        plot_classification_report_heatmap(all_y_true, all_y_pred, strategy_dir)
+        plot_classification_report_bars(all_y_true, all_y_pred, strategy_dir)
         plot_roc_curve_cv(all_y_true, all_y_prob, strategy_dir)
         plot_pr_curve_cv(all_y_true, all_y_prob, strategy_dir)
         plot_metrics_boxplot(fold_metrics, strategy_dir)

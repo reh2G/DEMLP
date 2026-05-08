@@ -11,7 +11,7 @@ def main():
     DEBUG = False
     SIMILARITY = 0.75
     KFOLD = 5
-    EPOCHS = 5
+    EPOCHS = 200
     BATCH_SIZE = 32
     EARLY_STOPPING_PATIENCE = 20
     name = "combined"

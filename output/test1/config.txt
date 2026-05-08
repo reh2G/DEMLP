@@ -1,0 +1,10 @@
+════════════════════════════════════════
+  Configurações do Experimento
+════════════════════════════════════════
+
+n_folds: 5
+epochs: 5
+batch_size: 32
+early_stopping_patience: 20
+similarity: 0.75
+dataset_name: combined
