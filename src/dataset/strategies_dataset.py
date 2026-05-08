@@ -21,9 +21,9 @@ def apply_augmentation(X_train, y_train, minority_class=1, majority_class=0):
         
     datagen = ImageDataGenerator(
         rotation_range=10,
-        width_shift_range=0.02,
-        height_shift_range=0.02,
-        zoom_range=0.02,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        zoom_range=0.2,
         horizontal_flip=True,
         preprocessing_function=add_noise,
         fill_mode='nearest'

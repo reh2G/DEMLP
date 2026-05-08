@@ -1,7 +1,7 @@
-Accuracy: 0.6769
-Precision: 0.6361
-Recall: 0.7540
-F1 Score: 0.6900
+Accuracy: 0.7269
+Precision: 0.9344
+Recall: 0.4597
+F1 Score: 0.6162
 Confusion Matrix:
-[[165 107]
- [ 61 187]]
+[[264   8]
+ [134 114]]

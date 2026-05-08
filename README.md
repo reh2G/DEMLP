@@ -165,11 +165,11 @@ A classe minoritária (`stone`) é aumentada artificialmente com transformaçõe
 | Operação | Parâmetro |
 |----------|-----------|
 | Rotação | até `±10°` |
-| Deslocamento horizontal | até `2%` da largura |
-| Deslocamento vertical | até `2%` da altura |
-| Ruído aditivo uniforme | amplitude `±2%` (i.e., `±0.02 × 255`) |
-| Zoom | até `2%` |
+| Deslocamento horizontal | até `20%` da largura |
+| Deslocamento vertical | até `20%` da altura |
+| Zoom | até `20%` |
 | Espelhamento horizontal | Ativado |
+| Ruído aditivo uniforme | amplitude `±2%` (i.e., `±0.02 × 255`) |
 | Modo de preenchimento | `nearest` |
 
 | Classe     | Quantidade após augmentation |

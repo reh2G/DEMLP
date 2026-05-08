@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -88,8 +89,6 @@ def plot_cumulative_confusion_matrix(all_y_true, all_y_pred, output_dir):
 # ─── Plot classification report as a grouped horizontal bar chart
 #
 def plot_classification_report_bars(all_y_true, all_y_pred, output_dir):
-    import pandas as pd
-
     y_true_flat = np.concatenate(all_y_true)
     y_pred_flat = np.concatenate(all_y_pred)
 
