@@ -100,7 +100,7 @@ O modelo utilizado é uma **CNN customizada denominada Conv4**, com 4 blocos con
 | Função de perda | `categorical_crossentropy` |
 | Métrica de monitoramento | `accuracy` |
 | EarlyStopping (monitor) | `val_loss` |
-| EarlyStopping (patience) | 20 épocas |
+| EarlyStopping (patience) | 50 épocas |
 | EarlyStopping (restore best weights) | `True` |
 | Épocas máximas | 200 |
 | Batch size | 32 |
@@ -128,8 +128,8 @@ O experimento segue o fluxo abaixo:
    │       └─ 80% dos grupos de treino/val → divididos em 5 folds
    │
    └─ Para cada fold:
-         ├─ 6. Aplicar estratégia de dados no treino
-         ├─ 7. Preparar os dados (normalizar, one-hot, canal)
+         ├─ 6. Preparar os dados (normalizar, one-hot, canal)
+         ├─ 7. Aplicar estratégia de dados no treino
          ├─ 8. Treinar o modelo (Conv4 + EarlyStopping)
          ├─ 9. Avaliar métricas (acc, prec, recall, F1, matriz de confusão)
          ├─ 10. Salvar modelo .keras
@@ -169,7 +169,6 @@ A classe minoritária (`stone`) é aumentada artificialmente com transformaçõe
 | Deslocamento vertical | até `20%` da altura |
 | Zoom | até `20%` |
 | Espelhamento horizontal | Ativado |
-| Ruído aditivo uniforme | amplitude `±2%` (i.e., `±0.02 × 255`) |
 | Modo de preenchimento | `nearest` |
 
 | Classe     | Quantidade após augmentation |
@@ -402,6 +401,7 @@ Os parâmetros do experimento são definidos no início de `main.py`:
 | Número de folds | `KFOLD` | `5` | Quantidade de folds na validação cruzada |
 | Épocas máximas | `EPOCHS` | `200` | Máximo de épocas por fold |
 | Batch size | `BATCH_SIZE` | `32` | Tamanho do batch durante o treinamento |
-| Paciência EarlyStopping | `EARLY_STOPPING_PATIENCE` | `20` | Épocas sem melhora no `val_loss` antes de parar |
+| Paciência EarlyStopping | `EARLY_STOPPING_PATIENCE` | `50` | Épocas sem melhora no `val_loss` antes de parar |
+| Semente aleatória | `RANDOM_STATE` | `53` | Semente para reprodutibilidade no particionamento e augmentation |
 | Nome do dataset | `name` | `"combined"` | Subdiretório dentro de `data/` |
 | Modo debug | `DEBUG` | `False` | Exibe detalhes dos grupos detectados |

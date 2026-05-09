@@ -3,8 +3,9 @@
 ════════════════════════════════════════
 
 n_folds: 5
-epochs: 5
+epochs: 200
 batch_size: 32
-early_stopping_patience: 20
+early_stopping_patience: 50
 similarity: 0.75
 dataset_name: combined
+random_state: 53

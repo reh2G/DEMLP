@@ -18,13 +18,14 @@ def run_model(X, y, groups, config, output_dir):
     epochs = config['epochs']
     batch_size = config['batch_size']
     early_stopping_patience = config['early_stopping_patience']
+    random_state = config['random_state']
     
     # Save configurations
     save_config(config, output_dir)
     
     # Separation of holdout test (group-aware)
     unique_groups = np.unique(groups)
-    train_groups, test_groups = train_test_split(unique_groups, test_size=0.2, random_state=53)
+    train_groups, test_groups = train_test_split(unique_groups, test_size=0.2, random_state=random_state)
 
     train_mask = np.isin(groups, train_groups)
     test_mask = np.isin(groups, test_groups)
@@ -45,7 +46,7 @@ def run_model(X, y, groups, config, output_dir):
         os.makedirs(strategy_dir, exist_ok=True)
         
         # Reset KFold for each strategy to ensure same splits
-        kf = KFold(n_splits=n_folds, shuffle=True, random_state=53)
+        kf = KFold(n_splits=n_folds, shuffle=True, random_state=random_state)
         
         # Arrays to collect metrics across all folds
         histories = []
@@ -71,23 +72,24 @@ def run_model(X, y, groups, config, output_dir):
             print(f"\n-- Fold {fold+1} --")
             print(f"Original: {len(X_train)} treino | {len(X_val)} validação")
 
-            # Apply the data strategy only for the train data
+            # Prepare the train and validation data (Normalization first!)
+            X_train_prep, y_train_prep, X_val_prep, y_val_prep = prepare_dataset(X_train, y_train, X_val, y_val)
+            
+            # Apply the data strategy only for the train data (After normalization)
             if strategy == 'augmentation':
-                X_train, y_train, augmented_X = apply_augmentation(X_train, y_train, minority_class=1, majority_class=0)
+                X_train_prep, y_train_prep, augmented_X = apply_augmentation(X_train_prep, y_train_prep, minority_class=1, majority_class=0, random_state=random_state)
                 # Save augmented samples only on the first fold
                 if fold == 0 and len(augmented_X) > 0:
-                    save_augmented_samples(augmented_X, strategy_dir)
+                    # augmented_X needs to be scaled back to 0-255 to save image properly
+                    save_augmented_samples((augmented_X * 255).astype(np.uint8), strategy_dir)
                     
             elif strategy == 'small-data':
-                X_train, y_train, excluded_indices = apply_undersampling(X_train, y_train, minority_class=1, majority_class=0)
+                X_train_prep, y_train_prep, excluded_indices = apply_undersampling(X_train_prep, y_train_prep, minority_class=1, majority_class=0, random_state=random_state)
                 # Save excluded images only on the first fold
                 if fold == 0 and len(excluded_indices) > 0:
                     save_excluded_images(excluded_indices, X_trainval, y_trainval, fold_train_mask, strategy_dir)
                     
-            print(f"Após estratégia '{strategy}': {len(X_train)} treino")
-            
-            # Prepare the train and validation data
-            X_train_prep, y_train_prep, X_val_prep, y_val_prep = prepare_dataset(X_train, y_train, X_val, y_val)
+            print(f"Após estratégia '{strategy}': {len(X_train_prep)} treino | {len(X_val_prep)} validação\n")
             
             # Instantiate the model
             tf.keras.backend.clear_session()

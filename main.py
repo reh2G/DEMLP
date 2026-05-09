@@ -13,12 +13,13 @@ def main():
     KFOLD = 5
     EPOCHS = 200
     BATCH_SIZE = 32
-    EARLY_STOPPING_PATIENCE = 20
+    EARLY_STOPPING_PATIENCE = 50
+    RANDOM_STATE = 53
     name = "combined"
     imgs_path = 'data/' + name
 
     # ─── Experiment Settings
-    config = {'n_folds': KFOLD, 'epochs': EPOCHS, 'batch_size': BATCH_SIZE, 'early_stopping_patience': EARLY_STOPPING_PATIENCE, 'similarity': SIMILARITY, 'dataset_name': name}
+    config = {'n_folds': KFOLD, 'epochs': EPOCHS, 'batch_size': BATCH_SIZE, 'early_stopping_patience': EARLY_STOPPING_PATIENCE, 'similarity': SIMILARITY, 'dataset_name': name, 'random_state': RANDOM_STATE}
 
     # ─── Output directory (auto-increment test number)
     output_dir = get_next_test_dir()
