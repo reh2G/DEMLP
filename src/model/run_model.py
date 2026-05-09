@@ -77,7 +77,8 @@ def run_model(X, y, groups, config, output_dir):
             
             # Apply the data strategy only for the train data (After normalization)
             if strategy == 'augmentation':
-                X_train_prep, y_train_prep, augmented_X = apply_augmentation(X_train_prep, y_train_prep, minority_class=1, majority_class=0, random_state=random_state)
+                extra_aug = config.get('extra_augment', 500)
+                X_train_prep, y_train_prep, augmented_X = apply_augmentation(X_train_prep, y_train_prep, minority_class=1, majority_class=0, random_state=random_state, extra_augment=extra_aug)
                 # Save augmented samples only on the first fold
                 if fold == 0 and len(augmented_X) > 0:
                     # augmented_X needs to be scaled back to 0-255 to save image properly

@@ -120,26 +120,25 @@ O experimento segue o fluxo abaixo:
 
 3. Separar Holdout de Teste (20% dos grupos)
       └─ Feito UMA vez, antes de qualquer estratégia
-      └─ Usado como teste final de todas as estratégias
 
 4. Para cada estratégia de dados [default | augmentation | small-data]:
    │
    ├─ 5. Validação Cruzada (KFold, 5 folds, nível de grupos)
-   │       └─ 80% dos grupos de treino/val → divididos em 5 folds
+   │       └─ 80% dos grupos (treino/val) → divididos em 5 folds
    │
    └─ Para cada fold:
          ├─ 6. Preparar os dados (normalizar, one-hot, canal)
          ├─ 7. Aplicar estratégia de dados no treino
          ├─ 8. Treinar o modelo (Conv4 + EarlyStopping)
-         ├─ 9. Avaliar métricas (acc, prec, recall, F1, matriz de confusão)
+         ├─ 9. Avaliar métricas no conjunto de validação
          ├─ 10. Salvar modelo .keras
          └─ 11. Gerar Grad-CAMs por fold
 
-5. Ao final de cada estratégia: gerar visualizações globais
+5. Ao final de cada estratégia: gerar visualizações globais baseadas na validação
 ```
 
 > [!IMPORTANT]
-> O **holdout de teste (20%)** é separado **antes** da validação cruzada e é **o mesmo para todas as estratégias**, garantindo comparação justa. As estratégias de dados (augmentation, undersampling) são aplicadas **apenas nos dados de treino de cada fold**, nunca na validação ou no teste.
+> O **holdout de teste (20%)** é separado **antes** da validação cruzada, mas no fluxo atual é apenas reservado e não participa da avaliação. As métricas e visualizações reportadas são geradas a partir das avaliações do conjunto de **validação** em cada fold. As estratégias de dados (augmentation, undersampling) são aplicadas **apenas nos dados de treino de cada fold**, nunca na validação.
 
 ---
 
@@ -151,14 +150,14 @@ São executadas 3 estratégias sequencialmente para comparação:
 
 Sem balanceamento. O modelo é treinado com a distribuição original do dataset, que apresenta desbalanceamento de classes.
 
-| Classe     | Quantidade (treino approx.) |
-|------------|----------------------------|
-| `healthy`  | ~1.663 imagens |
-| `stone`    | ~1.043 imagens |
+| Classe     | Quantidade total |
+|------------|------------------|
+| `healthy`  | 2.079 imagens |
+| `stone`    | 1.304 imagens |
 
 ### 5.2 Data Augmentation
 
-A classe minoritária (`stone`) é aumentada artificialmente com transformações para igualar a quantidade da classe majoritária (`healthy`). A augmentação é aplicada **por fold**, apenas sobre os dados de treino.
+Primeiro é feito o balanceamento na classe minoritária (`stone`) com transformações para igualar a quantidade da classe majoritária (`healthy`), para depois acrescentar mais 500 imagens em ambas as classes. A augmentação é aplicada **por fold**, apenas sobre os dados de treino.
 
 **Operações aplicadas:**
 
@@ -171,10 +170,10 @@ A classe minoritária (`stone`) é aumentada artificialmente com transformaçõe
 | Espelhamento horizontal | Ativado |
 | Modo de preenchimento | `nearest` |
 
-| Classe     | Quantidade após augmentation |
+| Classe     | Quantidade total equivalente |
 |------------|------------------------------|
-| `healthy`  | ~1.663 imagens (sem alteração) |
-| `stone`    | ~1.663 imagens (balanceado) |
+| `healthy`  | 2.579 imagens (+500) |
+| `stone`    | 2.579 imagens (balanceado +500) |
 
 > [!NOTE]
 > Amostras augmentadas do primeiro fold são salvas em `output/test_N/<estratégia>/augmented_samples/` para inspeção visual.
@@ -183,10 +182,10 @@ A classe minoritária (`stone`) é aumentada artificialmente com transformaçõe
 
 A classe majoritária (`healthy`) é reduzida aleatoriamente para igualar a quantidade da classe minoritária (`stone`). Nenhuma imagem nova é gerada.
 
-| Classe     | Quantidade após subamostragem |
+| Classe     | Quantidade total equivalente |
 |------------|-------------------------------|
-| `healthy`  | ~1.043 imagens (reduzido) |
-| `stone`    | ~1.043 imagens (sem alteração) |
+| `healthy`  | 1.304 imagens (reduzido) |
+| `stone`    | 1.304 imagens (sem alteração) |
 
 > [!NOTE]
 > As imagens excluídas no primeiro fold são registradas em `output/test_N/<estratégia>/excluded_images.txt`.
@@ -210,7 +209,7 @@ Total de imagens
 │         ├── Fold 2: 80% treino | 20% val
 │         ├── ...
 │         └── Fold 5: 80% treino | 20% val
-└── 20% → Teste (holdout, fixo para todas as estratégias)
+└── 20% → Teste (holdout reservado, não avaliado neste momento)
 ```
 
 ---
