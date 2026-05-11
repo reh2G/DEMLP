@@ -188,7 +188,7 @@ A classe majoritária (`healthy`) é reduzida aleatoriamente para igualar a quan
 | `stone`    | 1.304 imagens (sem alteração) |
 
 > [!NOTE]
-> As imagens excluídas no primeiro fold são registradas em `output/test_N/<estratégia>/excluded_images.txt`.
+> As imagens excluídas são registradas em `output/test_N/<estratégia>/excluded_images.txt`.
 
 ---
 
@@ -396,11 +396,12 @@ Os parâmetros do experimento são definidos no início de `main.py`:
 
 | Parâmetro | Variável | Valor padrão | Descrição |
 |-----------|----------|-------------|-----------|
+| Modo debug | `DEBUG` | `False` | Exibe detalhes dos grupos detectados |
 | Threshold SSIM | `SIMILARITY` | `0.75` | Limiar para considerar duas imagens do mesmo grupo |
 | Número de folds | `KFOLD` | `5` | Quantidade de folds na validação cruzada |
 | Épocas máximas | `EPOCHS` | `200` | Máximo de épocas por fold |
 | Batch size | `BATCH_SIZE` | `32` | Tamanho do batch durante o treinamento |
 | Paciência EarlyStopping | `EARLY_STOPPING_PATIENCE` | `50` | Épocas sem melhora no `val_loss` antes de parar |
 | Semente aleatória | `RANDOM_STATE` | `53` | Semente para reprodutibilidade no particionamento e augmentation |
+| Quantidade para aumento | `EXTRA_AUGMENT` | `500` | Quantidade extra de imagens para aumento em cada classe |
 | Nome do dataset | `name` | `"combined"` | Subdiretório dentro de `data/` |
-| Modo debug | `DEBUG` | `False` | Exibe detalhes dos grupos detectados |
