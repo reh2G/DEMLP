@@ -14,9 +14,9 @@ Pipeline de classificação de imagens médicas para **detecção de cálculos r
 6. [Validação Cruzada](#6-validação-cruzada)
 7. [Saídas do Experimento](#7-saídas-do-experimento)
 8. [Estrutura do Projeto](#8-estrutura-do-projeto)
-9. [Dependências](#9-dependências)
-10. [Ambiente e Execução](#10-ambiente-e-execução)
-11. [Parâmetros Configuráveis](#11-parâmetros-configuráveis)
+9. [Parâmetros Configuráveis](#9-parâmetros-configuráveis)
+10. [Dependências](#10-dependências)
+11. [Ambiente e Execução](#11-ambiente-e-execução)
 
 ---
 
@@ -323,7 +323,25 @@ DEMLP/
 
 ---
 
-## 9. Dependências
+## 9. Parâmetros Configuráveis
+
+Os parâmetros do experimento são definidos no início de `main.py`:
+
+| Parâmetro | Variável | Valor padrão | Descrição |
+|-----------|----------|-------------|-----------|
+| Modo debug | `DEBUG` | `False` | Exibe detalhes dos grupos detectados |
+| Threshold SSIM | `SIMILARITY` | `0.75` | Limiar para considerar duas imagens do mesmo grupo |
+| Número de folds | `KFOLD` | `5` | Quantidade de folds na validação cruzada |
+| Épocas máximas | `EPOCHS` | `200` | Máximo de épocas por fold |
+| Batch size | `BATCH_SIZE` | `32` | Tamanho do batch durante o treinamento |
+| Paciência EarlyStopping | `EARLY_STOPPING_PATIENCE` | `50` | Épocas sem melhora no `val_loss` antes de parar |
+| Semente aleatória | `RANDOM_STATE` | `53` | Semente para reprodutibilidade no particionamento e augmentation |
+| Quantidade para aumento | `EXTRA_AUGMENT` | `500` | Quantidade extra de imagens para aumento em cada classe |
+| Nome do dataset | `name` | `"combined"` | Subdiretório dentro de `data/` |
+
+---
+
+## 10. Dependências
 
 | Biblioteca | Versão mínima | Uso |
 |------------|--------------|-----|
@@ -341,7 +359,7 @@ DEMLP/
 
 ---
 
-## 10. Ambiente e Execução
+## 11. Ambiente e Execução
 
 Este projeto utiliza o `uv` para facilitar o gerenciamento de dependências e a execução do código.
 
@@ -387,21 +405,3 @@ uv run main.py
 > * O `setup.sh` precisa ser executado apenas **uma vez por máquina**, ou novamente caso o ambiente virtual seja recriado.
 > * O arquivo `.vscode/settings.json` é gerado localmente pelo `setup.sh` e não é versionado no repositório. Cada colaborador terá sua própria configuração com os caminhos corretos para sua máquina.
 > * O projeto foi desenvolvido e testado em **Linux com GPU NVIDIA**. Em outros sistemas operacionais, a configuração da GPU pode variar.
-
----
-
-## 11. Parâmetros Configuráveis
-
-Os parâmetros do experimento são definidos no início de `main.py`:
-
-| Parâmetro | Variável | Valor padrão | Descrição |
-|-----------|----------|-------------|-----------|
-| Modo debug | `DEBUG` | `False` | Exibe detalhes dos grupos detectados |
-| Threshold SSIM | `SIMILARITY` | `0.75` | Limiar para considerar duas imagens do mesmo grupo |
-| Número de folds | `KFOLD` | `5` | Quantidade de folds na validação cruzada |
-| Épocas máximas | `EPOCHS` | `200` | Máximo de épocas por fold |
-| Batch size | `BATCH_SIZE` | `32` | Tamanho do batch durante o treinamento |
-| Paciência EarlyStopping | `EARLY_STOPPING_PATIENCE` | `50` | Épocas sem melhora no `val_loss` antes de parar |
-| Semente aleatória | `RANDOM_STATE` | `53` | Semente para reprodutibilidade no particionamento e augmentation |
-| Quantidade para aumento | `EXTRA_AUGMENT` | `500` | Quantidade extra de imagens para aumento em cada classe |
-| Nome do dataset | `name` | `"combined"` | Subdiretório dentro de `data/` |
